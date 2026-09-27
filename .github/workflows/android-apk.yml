@@ -1,0 +1,90 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, "claude/**"]
+    paths: ["game/**", ".github/workflows/android-apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: 4.4.1
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Godot and export templates
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-android
+
+      - name: Download Godot
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          curl -sSLo godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip && mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot && rm godot.zip
+          curl -sSLo templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q templates.tpz && rm templates.tpz
+          # Keep only the Android templates to keep the cache small.
+          find templates -type f ! -name 'android_*' ! -name version.txt -delete
+
+      - name: Configure Godot for Android export
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates
+          ln -sfn ~/godot/templates ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;34.0.0" "platforms;android-34" > /dev/null
+          keytool -genkeypair -keystore ~/debug.keystore -storepass android -alias androiddebugkey \
+            -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.4.tres <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/debug_keystore = "$HOME/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+
+      - name: Import and export APK
+        working-directory: game
+        run: |
+          ~/godot/godot --headless --import || true
+          mkdir -p ../build
+          ~/godot/godot --headless --export-debug "Android" ../build/RelicHunter.apk
+          test -s ../build/RelicHunter.apk
+          ls -la ../build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RelicHunter-apk
+          path: build/RelicHunter.apk
+
+      - name: Publish release with the APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-build-${{ github.run_number }}
+          name: Relic Hunter build ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          body: |
+            Debug APK built from ${{ github.sha }} (${{ github.ref_name }}).
+            Open this page on your Android phone, tap **RelicHunter.apk**, and install it.
+          files: build/RelicHunter.apk
