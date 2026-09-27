@@ -48,6 +48,14 @@ func _ready() -> void:
 	floor_max_angle = deg_to_rad(50)
 	model = HeroineModel.new()
 	add_child(model)
+	# Soft fill light so Mara stays readable in dark temple interiors.
+	var fill := OmniLight3D.new()
+	fill.position = Vector3(0, 1.4, 0.6)
+	fill.omni_range = 3.0
+	fill.light_energy = 0.35
+	fill.light_color = Color(1.0, 0.9, 0.8)
+	fill.light_specular = 0.2
+	add_child(fill)
 	model.rotation.y = _facing
 
 

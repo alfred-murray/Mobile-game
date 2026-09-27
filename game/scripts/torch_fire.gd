@@ -51,9 +51,9 @@ static func _radial(inner: Color, outer: Color) -> GradientTexture2D:
 
 func _make_flames() -> GPUParticles3D:
 	if _flame_tex == null:
-		_flame_tex = _radial(Color(1, 1, 1, 1), Color(1, 1, 1, 0))
+		_flame_tex = _radial(Color(1, 1, 1, 0.9), Color(1, 1, 1, 0))
 	var p := GPUParticles3D.new()
-	p.amount = 28
+	p.amount = 18
 	p.lifetime = 0.6
 	p.local_coords = false
 	var pm := ParticleProcessMaterial.new()
@@ -75,13 +75,13 @@ func _make_flames() -> GPUParticles3D:
 	pm.scale_curve = sct
 	var grad := Gradient.new()
 	grad.offsets = PackedFloat32Array([0.0, 0.25, 0.7, 1.0])
-	grad.colors = PackedColorArray([Color(1.0, 0.95, 0.7, 1), Color(1.0, 0.6, 0.15, 1), Color(0.9, 0.25, 0.05, 0.7), Color(0.3, 0.05, 0.0, 0)])
+	grad.colors = PackedColorArray([Color(1.0, 0.85, 0.5, 0.9), Color(1.0, 0.5, 0.1, 0.8), Color(0.8, 0.2, 0.03, 0.5), Color(0.3, 0.05, 0.0, 0)])
 	var gt := GradientTexture1D.new()
 	gt.gradient = grad
 	pm.color_ramp = gt
 	p.process_material = pm
 	var q := QuadMesh.new()
-	q.size = Vector2(0.28, 0.36) * scale_factor
+	q.size = Vector2(0.16, 0.24) * scale_factor
 	var m := StandardMaterial3D.new()
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
@@ -89,7 +89,7 @@ func _make_flames() -> GPUParticles3D:
 	m.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	m.vertex_color_use_as_albedo = true
 	m.albedo_texture = _flame_tex
-	m.albedo_color = Color(2.2, 2.2, 2.2)  # HDR so glow picks it up
+	m.albedo_color = Color(1.1, 1.0, 1.0)  # slightly HDR so glow picks it up
 	q.material = m
 	p.draw_pass_1 = q
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

@@ -21,7 +21,7 @@ const CEIL_Y := 10.0
 const PIT_Z0 := -38.0
 const PIT_Z1 := -42.0
 const LEDGE_Z := -50.0
-const IDOL_POS := Vector3(0, UPPER_Y + 1.25, -64)
+const IDOL_POS := Vector3(0, UPPER_Y + 1.05, -64)
 
 const TEX := "res://assets/env/textures/"
 const MODELS := "res://assets/env/models/"
@@ -149,13 +149,13 @@ func _build_environment() -> void:
 	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
 	env.fog_enabled = true
 	env.fog_mode = Environment.FOG_MODE_EXPONENTIAL
-	env.fog_light_color = Color(0.55, 0.62, 0.5)
-	env.fog_density = 0.012
+	env.fog_light_color = Color(0.36, 0.4, 0.33)
+	env.fog_density = 0.0075
 	env.fog_sky_affect = 0.25
 	env.fog_height = 2.0
-	env.fog_height_density = 0.04
+	env.fog_height_density = 0.02
 	env.adjustment_enabled = true
-	env.adjustment_contrast = 1.08
+	env.adjustment_contrast = 1.12
 	env.adjustment_saturation = 1.05
 	var we := WorldEnvironment.new()
 	we.environment = env
@@ -213,8 +213,10 @@ func _build_jungle() -> void:
 	prop("boulder_01", Vector3(7.5, 0, -12.5), 200, 1.1, "convex")
 	prop("rock_moss_set_01", Vector3(10.5, 0, 1), 70, 1.5, "convex")
 	prop("rock_moss_set_02", Vector3(-10.5, 0, -12), 10, 1.3, "convex")
-	prop("rock_face_01", Vector3(-22, 0, -16), 90, 2.5)
-	prop("rock_face_01", Vector3(23, 0, -18), -80, 2.5)
+	prop("boulder_01", Vector3(-17, 0, -17), 120, 3.2)
+	prop("boulder_01", Vector3(18, 0, -19), 250, 3.6)
+	for p in [Vector3(-16, 0, -24), Vector3(16.5, 0, -26), Vector3(-13, 0, -31), Vector3(13, 0, -33)]:
+		_no_shadow_far(prop("island_tree_02", p, rng.randf_range(0, 360), rng.randf_range(1.3, 1.7)))
 	prop("dead_tree_trunk", Vector3(4, 0, -4), 110, 1.0, "convex")
 	prop("root_cluster_01", Vector3(-9, 0, -18), 45, 1.6)
 	prop("root_cluster_01", Vector3(10, 0, -18.5), 200, 1.8)
@@ -308,7 +310,7 @@ func _build_corridor() -> void:
 	prop("antique_ceramic_vase_01", Vector3(-2.3, FLOOR_Y, -27), 20, 1.2)
 	prop("antique_ceramic_vase_01", Vector3(2.2, FLOOR_Y, -33.5), 140, 1.0)
 	prop("antique_ceramic_vase_01", Vector3(-2.2, FLOOR_Y, -46), 70, 1.3)
-	prop("rock_moss_set_01", Vector3(2.0, FLOOR_Y, -30), 80, 0.5)
+	prop("antique_ceramic_vase_01", Vector3(2.3, FLOOR_Y, -29.5), 200, 1.1)
 	prop("root_cluster_01", Vector3(1.5, CEIL_Y - 0.2, -29), 90, 1.2).rotation_degrees.x = 180
 	prop("root_cluster_01", Vector3(-1.8, CEIL_Y - 0.2, -45), 10, 1.0).rotation_degrees.x = 180
 
@@ -391,14 +393,14 @@ func _build_chamber() -> void:
 	# Altar and idol.
 	box(Vector3(0, UPPER_Y + 0.15, -64), Vector3(3.6, 0.3, 2.6), sand)
 	box(Vector3(0, UPPER_Y + 0.6, -64), Vector3(1.6, 0.9, 1.2), sand)
-	idol = prop("bull_head", IDOL_POS, 180, 0.55)
+	idol = prop("bull_head", IDOL_POS, 180, 1.5)
 	var gold := StandardMaterial3D.new()
 	gold.albedo_color = Color(1.0, 0.76, 0.33)
 	gold.metallic = 1.0
 	gold.roughness = 0.22
 	gold.emission_enabled = true
 	gold.emission = Color(1.0, 0.6, 0.2)
-	gold.emission_energy_multiplier = 0.15
+	gold.emission_energy_multiplier = 0.25
 	for mi in idol.find_children("*", "MeshInstance3D", true, false):
 		(mi as MeshInstance3D).material_override = gold
 
@@ -491,19 +493,21 @@ func _light_shaft(from: Vector3, to: Vector3) -> MeshInstance3D:
 shader_type spatial;
 render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled;
 uniform vec4 tint : source_color = vec4(1.0, 0.85, 0.6, 1.0);
-uniform float strength = 0.18;
-varying float v_y;
-void vertex() { v_y = VERTEX.y; }
+uniform float strength = 0.22;
+uniform float height = 10.0;
+varying float v_t;
+void vertex() { v_t = 0.5 - VERTEX.y / height; }
 void fragment() {
-	float rim = pow(abs(dot(NORMAL, VIEW)), 1.5);
-	float fade_len = smoothstep(-0.5, 0.2, -v_y / 10.0 + 0.4);
-	float flicker = 0.9 + 0.1 * sin(TIME * 0.7 + v_y);
+	float facing = pow(abs(dot(NORMAL, VIEW)), 2.5);
+	float ends = smoothstep(0.0, 0.25, v_t) * (1.0 - smoothstep(0.7, 0.97, v_t));
+	float flicker = 0.92 + 0.08 * sin(TIME * 0.7 + UV.y * 6.0);
 	ALBEDO = tint.rgb;
-	ALPHA = rim * strength * flicker * fade_len;
+	ALPHA = facing * ends * strength * flicker;
 }
 """
 	var m := ShaderMaterial.new()
 	m.shader = sh
+	m.set_shader_parameter("height", shaft_len)
 	var mi := MeshInstance3D.new()
 	mi.mesh = cone
 	mi.material_override = m

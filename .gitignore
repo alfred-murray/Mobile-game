@@ -5,3 +5,4 @@ export/
 *.apk
 *.aab
 *.keystore
+build/

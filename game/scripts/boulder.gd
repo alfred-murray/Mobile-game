@@ -32,9 +32,11 @@ func _ready() -> void:
 	_mesh.add_child(src)
 	# Normalise the scanned boulder to our radius and centre it on the pivot.
 	var aabb := _merged_aabb(src)
-	var s := (RADIUS * 2.0) / maxf(aabb.size.x, maxf(aabb.size.y, aabb.size.z))
-	src.scale = Vector3.ONE * s * 1.08
-	src.position = -aabb.get_center() * s * 1.08
+	# The scan is an elongated rock; squash it into a roughly spherical boulder.
+	var d := RADIUS * 2.0 * 1.06
+	var s := Vector3(d / aabb.size.x, d / aabb.size.y, d / aabb.size.z)
+	src.scale = s
+	src.position = -aabb.get_center() * s
 	_dust = GPUParticles3D.new()
 	_dust.amount = 40
 	_dust.lifetime = 1.6
@@ -71,6 +73,13 @@ func _ready() -> void:
 	_dust.draw_pass_1 = q
 	add_child(_dust)
 	_dust.position = Vector3(0, -RADIUS + 0.2, -0.8)
+	# Torchlight catching the boulder's face so it reads in the dark corridor.
+	var glow := OmniLight3D.new()
+	glow.position = Vector3(0.8, 1.0, RADIUS + 1.6)
+	glow.light_color = Color(1.0, 0.62, 0.35)
+	glow.omni_range = 5.5
+	glow.light_energy = 1.2
+	add_child(glow)
 	reset()
 
 
@@ -79,7 +88,7 @@ func _merged_aabb(n: Node) -> AABB:
 	var first := true
 	for mi in n.find_children("*", "MeshInstance3D", true, false):
 		var a: AABB = (mi as MeshInstance3D).get_aabb()
-		a = (mi as Node3D).transform * a
+		a = ((n as Node3D).global_transform.affine_inverse() * (mi as Node3D).global_transform) * a
 		out = a if first else out.merge(a)
 		first = false
 	return out

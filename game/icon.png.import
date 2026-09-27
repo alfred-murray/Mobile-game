@@ -2,19 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dfottgxf7a1xc"
-path="res://.godot/imported/Michelle_Ch03_1001_Normal.png-7ef278ff9a7e20a0d0337bc1844366dd.ctex"
+uid="uid://i5jxtuat4hvd"
+path="res://.godot/imported/icon.png-487276ed1e3a0c39cad0279d744ee560.ctex"
 metadata={
 "vram_texture": false
-}
-generator_parameters={
-"md5": "a48e59ec3f4d7b055b29fbaef9a25786"
 }
 
 [deps]
 
-source_file="res://assets/characters/heroine/Michelle_Ch03_1001_Normal.png"
-dest_files=["res://.godot/imported/Michelle_Ch03_1001_Normal.png-7ef278ff9a7e20a0d0337bc1844366dd.ctex"]
+source_file="res://icon.png"
+dest_files=["res://.godot/imported/icon.png-487276ed1e3a0c39cad0279d744ee560.ctex"]
 
 [params]
 
@@ -24,7 +21,7 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
