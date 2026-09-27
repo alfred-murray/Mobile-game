@@ -35,6 +35,8 @@ func _steer_to(target: Vector3, yaw: float) -> void:
 	game.hud.controls.move_vector = v
 
 func _tick() -> void:
+	if _finished:
+		return
 	frames += 1
 	if frames > 60 * 150:
 		_say("TIMEOUT"); _finish(false); return
@@ -49,7 +51,7 @@ func _tick() -> void:
 	_press("action", false)
 	match step:
 		"start":
-			if frames == 30:
+			if frames == (150 if OS.has_environment("RECORD") else 30):
 				game._start(); step = "to_pit"; _say("game started")
 		"to_pit":
 			_steer_to(Vector3(0, 0, -60), 0.0)
@@ -118,6 +120,13 @@ func _tick() -> void:
 			cols.append("%s@%s n=%s" % [o.get_parent().name if o else "?", c.get_position().snapped(Vector3.ONE*0.01), c.get_normal().snapped(Vector3.ONE*0.01)])
 		_say(str(cols))
 
+var _finished := false
+
 func _finish(ok: bool) -> void:
+	if _finished:
+		return
+	_finished = true
 	print("RESULT: ", "PASS" if ok else "FAIL", " deaths=", deaths, " hang=", milestones.has("hang"))
+	if OS.has_environment("RECORD"):
+		for k in 150: await process_frame  # hold on the end screen for the video
 	quit(0 if ok else 1)
