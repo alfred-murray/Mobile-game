@@ -17,10 +17,14 @@ var _look_finger := -1
 var _look_last := Vector2.ZERO
 var _buttons := {}                # action -> {rect, finger, label}
 var _font: Font
+## Screen areas owned by other UI (the pause button) that must not start a
+## joystick or look drag.
+var is_blocked: Callable = func(_pos: Vector2) -> bool: return false
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Must also reset offsets: this runs after the node is already in the tree.
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_font = ThemeDB.fallback_font
 	_buttons = {
@@ -37,6 +41,22 @@ func _layout() -> void:
 	_buttons["action"]["center"] = Vector2(s.x - 290, s.y - 90)
 
 
+func release_all() -> void:
+	for a in _buttons:
+		if _buttons[a]["finger"] != -1:
+			_buttons[a]["finger"] = -1
+			Input.action_release(a)
+	_stick_finger = -1
+	_look_finger = -1
+	move_vector = Vector2.ZERO
+	queue_redraw()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree():
+		release_all()
+
+
 func set_action_label(text: String) -> void:
 	_buttons["action"]["label"] = text
 	queue_redraw()
@@ -48,6 +68,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		var e := event as InputEventScreenTouch
 		if e.pressed:
+			if is_blocked.call(e.position):
+				return
 			for a in _buttons:
 				var b: Dictionary = _buttons[a]
 				if b["finger"] == -1 and e.position.distance_to(b["center"]) < b["radius"] * 1.25:
@@ -98,9 +120,13 @@ func _draw() -> void:
 		var knob := _stick_origin + (_stick_pos - _stick_origin).limit_length(STICK_RADIUS)
 		draw_circle(knob, 44, Color(1, 1, 1, 0.35))
 	else:
-		var hint := Vector2(200, size.y - 170)
-		draw_arc(hint, STICK_RADIUS * 0.8, 0, TAU, 48, Color(1, 1, 1, 0.15), 2.0, true)
-		draw_circle(hint, 36, Color(1, 1, 1, 0.12))
+		# Resting joystick so players know where to put their thumb.
+		var hint := Vector2(190, size.y - 160)
+		draw_circle(hint, STICK_RADIUS * 0.8, Color(0.08, 0.06, 0.04, 0.3))
+		draw_arc(hint, STICK_RADIUS * 0.8, 0, TAU, 48, Color(0.95, 0.78, 0.45, 0.55), 3.0, true)
+		draw_circle(hint, 38, Color(1, 0.92, 0.75, 0.35))
+		var tw := _font.get_string_size("MOVE", HORIZONTAL_ALIGNMENT_CENTER, -1, 18).x
+		draw_string(_font, hint + Vector2(-tw * 0.5, STICK_RADIUS * 0.8 + 28), "MOVE", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1, 0.92, 0.75, 0.7))
 	# Buttons.
 	for a in _buttons:
 		var b: Dictionary = _buttons[a]

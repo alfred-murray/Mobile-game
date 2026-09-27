@@ -29,6 +29,7 @@ This repo is one polished vertical-slice level with realistic graphics:
 | Look | Drag on the right half | Right mouse drag |
 | Jump / climb up from a ledge | JUMP | Space |
 | Take the idol / let go of a ledge | GRAB / TAKE | E |
+| Pause (resume / restart level) | II button (top right) or Android back | Esc |
 
 Jump toward a wall to grab its ledge automatically. While hanging, push toward the
 wall (or press JUMP) to climb up, or pull away (or press GRAB) to drop.
@@ -80,6 +81,9 @@ iOS: the same project exports to iOS from a Mac with Xcode (Project â†’ Export â
 
 ```sh
 cd game
+# Drives the game with synthetic touchscreen events: title tap, joystick,
+# look drag, JUMP, pause and resume.
+godot --headless --fixed-fps 60 -s tools/touch_test.gd
 # Plays the whole level headless: pit jump, ledge grab, climb, idol, boulder escape.
 godot --headless --fixed-fps 60 -s tools/playtest_bot.gd
 # Simulates a slower player who waits 1.5 s after taking the idol.

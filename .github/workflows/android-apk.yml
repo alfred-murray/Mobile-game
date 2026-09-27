@@ -62,10 +62,21 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
-      - name: Import and export APK
+      - name: Import assets
+        working-directory: game
+        run: ~/godot/godot --headless --import || true
+
+      - name: Test touch controls and play through the level
         working-directory: game
         run: |
-          ~/godot/godot --headless --import || true
+          ~/godot/godot --headless --fixed-fps 60 --audio-driver Dummy -s tools/touch_test.gd | tee touch.log
+          grep -q "TOUCH TEST: PASS" touch.log
+          ~/godot/godot --headless --fixed-fps 60 --audio-driver Dummy -s tools/playtest_bot.gd | tee bot.log
+          grep -q "RESULT: PASS" bot.log
+
+      - name: Export APK
+        working-directory: game
+        run: |
           mkdir -p ../build
           ~/godot/godot --headless --export-debug "Android" ../build/RelicHunter.apk
           test -s ../build/RelicHunter.apk

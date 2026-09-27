@@ -5,6 +5,7 @@ config_version=5
 config/name="Relic Hunter"
 config/description="Mara Vance and the Temple of the Golden Bull"
 run/main_scene="res://scenes/main.tscn"
+config/quit_on_go_back=false
 config/icon="res://icon.png"
 config/features=PackedStringArray("4.4", "Mobile")
 

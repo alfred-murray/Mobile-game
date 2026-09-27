@@ -60,7 +60,9 @@ func _ready() -> void:
 	hud.controls.look.connect(cam.add_look)
 	hud.controls.visible = false
 	hud.start_pressed.connect(_start)
-	hud.restart_pressed.connect(func(): get_tree().reload_current_scene())
+	hud.restart_pressed.connect(func():
+		get_tree().paused = false
+		get_tree().reload_current_scene())
 
 	player.respawn(START_POS, START_YAW)
 	player.state = Player.State.CUTSCENE
@@ -69,12 +71,32 @@ func _ready() -> void:
 	hud.fade_to(0.0, 1.5)
 
 
+func _notification(what: int) -> void:
+	# Auto-pause when the app goes to the background (home button, call, etc.).
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_PAUSED:
+		if hud and (phase == Phase.PLAYING or phase == Phase.ESCAPE):
+			hud.set_paused(true)
+	elif what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		# Android back gesture: toggle pause instead of quitting.
+		if hud and (phase == Phase.PLAYING or phase == Phase.ESCAPE):
+			hud.set_paused(not get_tree().paused)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Android back button / Escape toggles the pause menu.
+	if event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_ESCAPE or event.keycode == KEY_BACK):
+		if phase == Phase.PLAYING or phase == Phase.ESCAPE:
+			hud.set_paused(not get_tree().paused)
+			get_viewport().set_input_as_handled()
+
+
 func _start() -> void:
 	if phase != Phase.TITLE:
 		return
 	phase = Phase.PLAYING
 	hud.title_root.visible = false
 	hud.controls.visible = true
+	hud.pause_button.visible = true
 	player.state = Player.State.GROUND
 	player.model.play("idle", 0.3)
 	cam.distance = 3.6
@@ -162,6 +184,7 @@ func _win() -> void:
 	player.state = Player.State.CUTSCENE
 	player.model.play("idle", 0.4)
 	hud.controls.visible = false
+	hud.pause_button.visible = false
 	hud.set_objective("")
 	hud.end_label.text = "Mara escaped with the Golden Bull in %d:%02d" % [int(_time) / 60, int(_time) % 60]
 	await get_tree().create_timer(1.0).timeout
