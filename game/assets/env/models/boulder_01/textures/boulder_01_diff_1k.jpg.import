@@ -3,25 +3,27 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bxqljeguyclnc"
-path="res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.ctex"
+path.s3tc="res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.s3tc.ctex"
+path.etc2="res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/env/models/boulder_01/textures/boulder_01_diff_1k.jpg"
-dest_files=["res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.ctex"]
+dest_files=["res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.s3tc.ctex", "res://.godot/imported/boulder_01_diff_1k.jpg-0ecdbbf59c5ec33e6ef6c867e5a7026e.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

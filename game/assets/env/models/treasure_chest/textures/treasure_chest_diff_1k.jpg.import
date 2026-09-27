@@ -3,25 +3,27 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://caukgi84bky4j"
-path="res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.ctex"
+path.s3tc="res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.s3tc.ctex"
+path.etc2="res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/env/models/treasure_chest/textures/treasure_chest_diff_1k.jpg"
-dest_files=["res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.ctex"]
+dest_files=["res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.s3tc.ctex", "res://.godot/imported/treasure_chest_diff_1k.jpg-0b2f6f9c532d71c58a91e8297bf1f4a6.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

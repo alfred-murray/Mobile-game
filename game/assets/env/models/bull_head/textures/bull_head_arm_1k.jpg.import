@@ -3,25 +3,27 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cp4b8fsv7026j"
-path="res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.ctex"
+path.s3tc="res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.s3tc.ctex"
+path.etc2="res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/env/models/bull_head/textures/bull_head_arm_1k.jpg"
-dest_files=["res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.ctex"]
+dest_files=["res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.s3tc.ctex", "res://.godot/imported/bull_head_arm_1k.jpg-5bce59517ba8e822d11cd9f2fde99545.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

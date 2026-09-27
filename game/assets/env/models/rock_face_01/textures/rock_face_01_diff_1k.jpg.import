@@ -3,25 +3,27 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4278nbva4m3c"
-path="res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.ctex"
+path.s3tc="res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.s3tc.ctex"
+path.etc2="res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/env/models/rock_face_01/textures/rock_face_01_diff_1k.jpg"
-dest_files=["res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.ctex"]
+dest_files=["res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.s3tc.ctex", "res://.godot/imported/rock_face_01_diff_1k.jpg-8a2339ac411945e41fa3a678b7dee215.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
